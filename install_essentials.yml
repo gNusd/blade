@@ -1,0 +1,36 @@
+---
+ - name: Install essential packages
+   hosts: all
+   gather_facts: no
+   remote_user: slayed
+   vars_files:
+     - vars/main.yml
+   become: true
+   tasks:
+   - name: Update apt-get repo and cache
+     ansible.builtin.apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+   - name: Install essential packages
+     ansible.builtin.apt:
+       name:
+         - tmux
+         - docker-compose
+         - htop
+         - glances
+         - cockpit
+       state: latest 
+   - name: Creates directory
+     ansible.builtin.file:
+       path: /home/slayed/repositories
+       state: directory
+   - name: Clone dotfiles
+     git:
+       repo: https://github.com/gnusd/dotfiles.git
+       dest: /home/slayed/repositories/dotfiles/
+       clone: yes
+       update: yes
+   - name: Clone scripts
+     git:
+       repo: https://github.com/gnusd/scripts.git
+       dest: /home/slayed/repositories/scripts/
+       clone: yes
+       update: yes
