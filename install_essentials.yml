@@ -1,36 +1,54 @@
 ---
- - name: Install essential packages
-   hosts: all
-   gather_facts: no
-   remote_user: slayed
-   vars_files:
-     - vars/main.yml
-   become: true
-   tasks:
-   - name: Update apt-get repo and cache
-     ansible.builtin.apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
-   - name: Install essential packages
-     ansible.builtin.apt:
-       name:
-         - tmux
-         - docker-compose
-         - htop
-         - glances
-         - cockpit
-       state: latest 
-   - name: Creates directory
-     ansible.builtin.file:
-       path: /home/slayed/repositories
-       state: directory
-   - name: Clone dotfiles
-     git:
-       repo: https://github.com/gnusd/dotfiles.git
-       dest: /home/slayed/repositories/dotfiles/
-       clone: yes
-       update: yes
-   - name: Clone scripts
-     git:
-       repo: https://github.com/gnusd/scripts.git
-       dest: /home/slayed/repositories/scripts/
-       clone: yes
-       update: yes
+- name: Install essential packages
+  hosts: all
+  gather_facts: false
+  remote_user: slayed
+  vars_files:
+    - vars/main.yml
+  become: true
+  tasks:
+    - name: "Update apt-get repo and cache"
+      ansible.builtin.apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+    - name: "Install essential packages"
+      ansible.builtin.apt:
+        name:
+          - tmux
+          - docker-compose
+          - htop
+          - glances
+          - cockpit
+        state: latest
+    - name: "Enable adn start docker.service"
+      ansible.builtin.systemd:
+        name: docker.service
+        state: reloaded 
+    - name: "Creates directory"
+      ansible.builtin.file:
+        path: /home/slayed/repositories
+        state: directory
+    - name: "Clone dotfiles"
+      git:
+        repo: https://github.com/gnusd/dotfiles.git
+        dest: /home/slayed/repositories/dotfiles/
+        clone: true
+        update: true
+    - name: "Clone scripts"
+      git:
+        repo: https://github.com/gnusd/scripts.git
+        dest: /home/slayed/repositories/scripts/
+        clone: true
+        update: true
+    - name: Remove file (delete file)
+      ansible.builtin.file:
+        path: /home/slayed/.bashrc
+        state: absent
+    - name: "Symbolic link of .bashrc in dotfiles"
+      ansible.builtin.file:
+        src: /home/slayed/repositories/dotfiles/.bashrc
+        dest: /home/slayed/.bashrc
+        state: link
+    - name: "Add slayed to docker group"
+      user:
+        name: "slayed"
+        group: "docker"
+        shell: /bin/bash

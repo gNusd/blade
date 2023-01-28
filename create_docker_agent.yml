@@ -1,0 +1,19 @@
+---
+- name: "Create Portainer agent"
+  hosts: all
+  gather_facts: false
+  remote_user: slayed
+  vars_files:
+    - vars/main.yml
+  become: false
+  tasks:
+  - name: "Deploy Portainer agent"
+    docker_container:
+      name: portainer_agent
+      image: portainer/agent:latest
+      ports:
+        - "9001:9001"
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /var/lib/docker/volumes:/var/lib/docker/volumes
+      restart_policy: always
