@@ -2,20 +2,9 @@
 - name: Initial setup
   hosts: all
   gather_facts: false
-  remote_user: gnus
+  remote_user: slayed
   become: true
   tasks:
-    - name: "Add user slayed"
-      ansible.builtin.user:
-        name: slayed
-        shell: /bin/bash
-    - name: "Add slayed user to the sudoers"
-      ansible.builtin.copy:
-        dest: "/etc/sudoers.d/slayed"
-        content: "slayed  ALL=(ALL)  NOPASSWD: ALL"
-        owner: root
-        group: root
-        mode: 0440
     - name: "Update apt-get repo and cache"
       ansible.builtin.apt:
         update_cache: true
