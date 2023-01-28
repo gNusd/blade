@@ -1,0 +1,48 @@
+---
+- name: Clone git directories
+  hosts: all
+  gather_facts: false
+  remote_user: slayed
+  tasks:
+    - name: "Creates repositories directory"
+      ansible.builtin.file:
+        path: "/home/slayed/repositories"
+        state: "directory"
+        owner: slayed
+        group: slayed
+        mode: '0644'
+    - name: "Creates dotfiles directory"
+      ansible.builtin.file:
+        path: "/home/slayed/repositories/dotfiles"
+        state: "directory"
+        owner: slayed
+        group: slayed
+        mode: '0644'
+    - name: "Creates scripts directory"
+      ansible.builtin.file:
+        path: /home/slayed/repositories/scripts
+        state: "directory"
+        owner: slayed
+        group: slayed
+        mode: '0644'
+    - name: "Clone dotfiles"
+      ansible.builtin.git:
+        repo: https://github.com/gnusd/dotfiles.git
+        dest: /home/slayed/repositories/dotfiles/
+        clone: true
+        update: true
+    - name: "Clone scripts"
+      ansible.builtin.git:
+        repo: https://github.com/gnusd/scripts.git
+        dest: /home/slayed/repositories/scripts/
+        clone: true
+        update: true
+    - name: Remove file (delete file)
+      ansible.builtin.file:
+        path: /home/slayed/.bashrc
+        state: absent
+    - name: "Symbolic link of .bashrc in dotfiles"
+      ansible.builtin.file:
+        src: /home/slayed/repositories/dotfiles/.bashrc
+        dest: /home/slayed/.bashrc
+        state: link

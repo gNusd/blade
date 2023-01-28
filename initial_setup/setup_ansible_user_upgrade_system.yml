@@ -4,49 +4,27 @@
   gather_facts: false
   remote_user: gnus
   become: true
+  vars:
+  vars_files:
+    - ../vars/ssh_keys.yml
   tasks:
-      - name: Add user slayed
-        user:
-          name: slayed
-          shell: /bin/bash
-      - name: "Add slayed user to the sudoers"
-        copy:
-          dest: "/etc/sudoers.d/slayed"
-          content: "slayed  ALL=(ALL)  NOPASSWD: ALL"
-      - name: "Creates directory"
-        file:
-          path: /home/slayed/.ssh
-          state: directory
-      - name: "copy pub key to authorized_keys"
-        copy:
-          src: "./.ssh/id_slayed.pub"
-          dest: "/home/slayed/.ssh/authorized_keys"
-      - name: "add id_rsa to host"
-        copy:
-          src: "~/.ssh/id_rsa"
-          dest: "/home/slayed/.ssh/id_rsa"
-      - name: "Disable Password Authentication"
-        lineinfile:
-          dest=/etc/ssh/sshd_config
-          regexp='^PasswordAuthentication'
-          line="PasswordAuthentication no"
-          state=present
-          backup=yes
-      - name: "Disable Root Login"
-        lineinfile:
-          dest=/etc/ssh/sshd_config
-          regexp='^PermitRootLogin'
-          line="PermitRootLogin no"
-          state=present
-          backup=yes
-        notify:
-          - restart ssh
-      - name: "Update apt-get repo and cache"
-        apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
-      - name: "Upgrade all apt packages"
-        apt: upgrade=dist force_apt_get=yes
-  handlers:
-  - name: "restart ssh"
-    service:
-      name=sshd
-      state=restarted
+    - name: "Add user slayed"
+      ansible.builtin.user:
+        name: slayed
+        shell: /bin/bash
+    - name: "Add slayed user to the sudoers"
+      ansible.builtin.copy:
+        dest: "/etc/sudoers.d/slayed"
+        content: "slayed  ALL=(ALL)  NOPASSWD: ALL"
+        owner: root
+        group: root
+        mode: 0440
+    - name: "Update apt-get repo and cache"
+      ansible.builtin.apt:
+        update_cache: true
+        force_apt_get: true
+        cache_valid_time: 3600
+    - name: "Upgrade all apt packages"
+      ansible.builtin.apt:
+        upgrade: "dist"
+        force_apt_get: true

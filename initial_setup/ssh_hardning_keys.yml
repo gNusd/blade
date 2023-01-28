@@ -1,0 +1,71 @@
+---
+- name: Initial setup
+  hosts: all
+  gather_facts: false
+  remote_user: slayed
+  become: true
+  tasks:
+      - name: "Creates directory"
+        ansible.builtin.file:
+            path: "/home/slayed/.ssh"
+            state: "directory"
+            mode: '1700'
+            owner: "slayed"
+            group: "slayed"
+      - name: "Copy id_rsa to server"
+        ansible.builtin.copy:
+            src: "/home/gnus/.ssh/id_rsa"
+            dest: "/home/slayed/.ssh/"
+            mode: '0600'
+            owner: "slayed"
+            group: "slayed"
+      - name: "Copy id_slayed to server"
+        ansible.builtin.copy:
+            src: "/home/gnus/repositories/blade/.ssh/id_slayed"
+            dest: "/home/slayed/.ssh/"
+            mode: '0600'
+            owner: "slayed"
+            group: "slayed"
+      - name: "Copy id_slayed.pub to server"
+        ansible.builtin.copy:
+            src: "/home/gnus/repositories/blade/.ssh/id_slayed.pub"
+            dest: "/home/slayed/.ssh/"
+            mode: '0644'
+            owner: "slayed"
+            group: "slayed"
+      - name: "Copy id_rsa.pub to server"
+        ansible.builtin.copy:
+            src: "/home/gnus/.ssh/id_rsa.pub"
+            dest: "/home/slayed/.ssh/"
+            mode: '0644'
+            owner: "slayed"
+            group: "slayed"
+      - name: "Update SSH keys"
+        ansible.posix.authorized_key:
+            user: "slayed"
+            key: "{{ item }}"
+            state: present
+        with_file:
+            - "/home/gnus/repositories/blade/.ssh/id_slayed.pub"
+            - "/home/gnus/.ssh/id_rsa.pub"
+      - name: "Disable Password Authentication"
+        ansible.builtin.lineinfile:
+            dest: "/etc/ssh/sshd_config"
+            regexp: "'^PasswordAuthentication'"
+            line: "PasswordAuthentication no"
+            state: "present"
+            backup: true
+      - name: "Disable Root Login"
+        ansible.builtin.lineinfile:
+            dest: "/etc/ssh/sshd_config"
+            regexp: "'^PermitRootLogin'"
+            line: "PermitRootLogin no"
+            state: "present"
+            backup: true
+        notify:
+            - restart ssh
+  handlers:
+      - name: "restart ssh"
+        service:
+            name: "sshd"
+            state: "restarted"
