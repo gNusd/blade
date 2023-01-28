@@ -9,7 +9,7 @@
         ansible.builtin.file:
             path: "/home/slayed/.ssh"
             state: "directory"
-            mode: '1700'
+            mode: '0700'
             owner: "slayed"
             group: "slayed"
       - name: "Copy id_rsa to server"
@@ -63,9 +63,9 @@
             state: "present"
             backup: true
         notify:
-            - restart ssh
+            - Restart ssh
   handlers:
-      - name: "restart ssh"
-        service:
+      - name: "Restart ssh"
+        ansible.builtin.service:
             name: "sshd"
             state: "restarted"

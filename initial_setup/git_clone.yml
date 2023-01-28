@@ -3,28 +3,26 @@
   hosts: all
   gather_facts: false
   remote_user: slayed
+  become: false
   tasks:
     - name: "Creates repositories directory"
       ansible.builtin.file:
         path: "/home/slayed/repositories"
         state: "directory"
         owner: slayed
-        group: slayed
-        mode: '0644'
+        mode: '0755'
     - name: "Creates dotfiles directory"
       ansible.builtin.file:
         path: "/home/slayed/repositories/dotfiles"
         state: "directory"
         owner: slayed
-        group: slayed
-        mode: '0644'
+        mode: '0755'
     - name: "Creates scripts directory"
       ansible.builtin.file:
         path: /home/slayed/repositories/scripts
         state: "directory"
         owner: slayed
-        group: slayed
-        mode: '0644'
+        mode: '0755'
     - name: "Clone dotfiles"
       ansible.builtin.git:
         repo: https://github.com/gnusd/dotfiles.git
