@@ -42,7 +42,7 @@
         - "{{ new_groups }}"
     - name: "Copy public key to server"
       ansible.builtin.copy:
-        src: "/home/gnus/repositories/blade/scripts/01-netcfg.yaml"
+        src: "/home/gnus/repositories/blade/files/01-netcfg.yaml"
         dest: "/etc/netplan/"
         mode: '0644'
         owner: "root"
