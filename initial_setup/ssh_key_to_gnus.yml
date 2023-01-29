@@ -6,44 +6,44 @@
   become: true
   vars:
     ssh_key_path: /home/gnus/repositories/blade/.ssh
-    ssh_key_dest: /home/gnus/.ssh/
+    ssh_key_dest: /home/gnus/.ssh
     ssh_keys:
-    - dev_rsa
-    - id_rsa
+      - dev_rsa
+      - id_rsa
     ssh_keys_pub:
-    - dev_rsa.pub
-    - id_rsa.pub
+      - dev_rsa.pub
+      - id_rsa.pub
     user: gnus
   tasks:
-      - name: "Creates directory"
-        ansible.builtin.file:
-            path: "{{ ssh_key_dest }}"
-            state: "directory"
-            mode: '0700'
-            owner: {{ user }}
-            group: {{ user }}
-      - name: "Copy private key to server"
-        ansible.builtin.copy:
-            src: "{{ ssh_key_path }}/{{ item }}"
-            dest: "{{ ssh_key_dest }}"
-            mode: '0600'
-            owner: {{ user }}
-            group: {{ user }}
-        with_items:
-          - "{{ ssh_keys }}"
-      - name: "Copy public key to server"
-        ansible.builtin.copy:
-            src: "{{ ssh_key_path }}/{{ ssh_keys_pub }}"
-            dest: "{{ ssh_key_dest }}"
-            mode: '0644'
-            owner: {{ user }}
-            group: {{ user }}
-        with_items:
-          - {{ ssh_keys_pub }}
-      - name: "Update SSH keys"
-        ansible.posix.authorized_key:
-            user: "slayed"
-            key: "{{ ssh_key_path }}/{{ item }}"
-            state: present
-        with_file:
-          - {{ ssh_keys_pub }}
+    - name: "Creates directory"
+      ansible.builtin.file:
+        path: "{{ ssh_key_dest }}"
+        state: "directory"
+        mode: '0700'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+    - name: "Copy private key to server"
+      ansible.builtin.copy:
+        src: "{{ ssh_key_path }}/{{ item }}"
+        dest: "{{ ssh_key_dest }}"
+        mode: '0600'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+      with_items:
+        - "{{ ssh_keys }}"
+    - name: "Copy public key to server"
+      ansible.builtin.copy:
+        src: "{{ ssh_key_path }}/{{ item }}"
+        dest: "{{ ssh_key_dest }}"
+        mode: '0644'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+      with_items:
+        - "{{ ssh_keys_pub }}"
+    - name: "Update SSH keys"
+      ansible.posix.authorized_key:
+        user: "{{ user }}"
+        key: "{{ lookup('file',  '{{ ssh_key_path }}/{{ item }}') }}"
+        state: present
+      with_items:
+        - "{{ ssh_keys_pub }}"
