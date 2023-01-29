@@ -25,22 +25,24 @@
         mode: '0755'
     - name: "Clone dotfiles"
       ansible.builtin.git:
-        repo: https://github.com/gnusd/dotfiles.git
-        dest: /home/slayed/repositories/dotfiles/
+        repo: "https://github.com/gnusd/dotfiles.git"
+        dest: "/home/slayed/repositories/dotfiles/"
         clone: true
         update: true
+        version: "tyrellCorp"
     - name: "Clone scripts"
       ansible.builtin.git:
-        repo: https://github.com/gnusd/scripts.git
-        dest: /home/slayed/repositories/scripts/
+        repo: "https://github.com/gnusd/scripts.git"
+        dest: "/home/slayed/repositories/scripts/"
         clone: true
         update: true
+        version: "master"
     - name: Remove file (delete file)
       ansible.builtin.file:
         path: /home/slayed/.bashrc
         state: absent
     - name: "Symbolic link of .bashrc in dotfiles"
       ansible.builtin.file:
-        src: /home/slayed/repositories/dotfiles/.bashrc
-        dest: /home/slayed/.bashrc
+        src: "/home/slayed/repositories/dotfiles/.bashrc"
+        dest: "/home/slayed/.bashrc"
         state: link
