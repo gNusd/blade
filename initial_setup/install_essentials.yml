@@ -19,6 +19,7 @@
           - glances
           - cockpit
           - neovim
+          - vifm
     - name: "Enable adn start docker.service"
       ansible.builtin.systemd:
         name: docker.service
