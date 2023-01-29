@@ -4,6 +4,8 @@
   gather_facts: false
   remote_user: slayed
   become: true
+  vars:
+    user: "slayed"
   tasks:
     - name: "Update apt-get repo and cache"
       ansible.builtin.apt:
@@ -26,6 +28,7 @@
         state: reloaded
     - name: "Add slayed to docker group"
       ansible.builtin.user:
-        name: "slayed"
+        name: "{{ user }}"
         group: "docker"
+        append: true
         shell: /bin/bash

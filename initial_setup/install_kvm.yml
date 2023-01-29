@@ -1,0 +1,60 @@
+---
+- name: Install essential packages
+  hosts: srv3
+  gather_facts: false
+  remote_user: slayed
+  become: true
+  vars:
+    user: "gnus"
+    new_groups:
+      - "kvm"
+      - "libvirt"
+    interface: "\t\t\tenp1s0:"
+    interface_name: "\t\t\tinterfaces: [enp1s0]"
+    ip_address: "\t\t\taddresses: [192.168.122.7/24]"
+    mac_address: "\t\t\tmacaddress: 52:54:00:ea:b8:c8"
+  tasks:
+    - name: "Update apt-get repo and cache"
+      ansible.builtin.apt:
+        update_cache: true
+        force_apt_get: true
+        cache_valid_time: 3600
+    - name: "Install essential packages"
+      ansible.builtin.apt:
+        name:
+          - qemu-kvm
+          - virt-manager
+          - libvirt-daemon-system
+          - virtinst
+          - libvirt-clients
+          - bridge-utils
+    - name: Reload service httpd, in all cases
+      ansible.builtin.systemd:
+        name: libvirtd.service
+        enabled: true
+        state: reloaded
+    - name: Add user to libvirt & kvm
+      ansible.builtin.user:
+        name: "{{ user }}"
+        groups: "{{ new_groups }}"
+        append: true
+      with_items:
+        - "{{ new_groups }}"
+    - name: "Copy public key to server"
+      ansible.builtin.copy:
+        src: "/home/gnus/repositories/blade/scripts/01-netcfg.yaml"
+        dest: "/etc/netplan/"
+        mode: '0644'
+        owner: "root"
+        group: "root"
+    - name: "Add details to 01-netcfg.yaml"
+      ansible.builtin.lineinfile:
+        dest: "/etc/netplan/01-netcfg.yaml"
+        regexp: "{{ item.From }}"
+        line: "{{ item.To }}"
+        state: "present"
+        backup: true
+      with_items:
+        - { From: '<<interface_name>>', To: '{{ interface_name }}' }
+        - { From: '<<ip_address>>', To: '{{ ip_address }}' }
+        - { From: '<<mac_address>>', To: '{{ mac_address }}' }
