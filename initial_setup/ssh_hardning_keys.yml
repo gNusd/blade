@@ -4,50 +4,50 @@
   gather_facts: false
   remote_user: slayed
   become: true
+  vars:
+    ssh_key_path: /home/gnus/repositories/blade/.ssh
+    ssh_key_dest: /home/slayed/.ssh/
+    ssh_keys:
+    - id_rsa
+    - id_slayed
+    ssh_keys_pub:
+    - id_rsa.pub
+    - id_slayed.pub
+    ansible_user: slayed
+    other_user: gnus
   tasks:
       - name: "Creates directory"
         ansible.builtin.file:
             path: "/home/slayed/.ssh"
             state: "directory"
             mode: '0700'
-            owner: "slayed"
-            group: "slayed"
-      - name: "Copy id_rsa to server"
+            owner: {{ ansible_user }}
+            group: {{ ansible_user }}
+      - name: "Copy private key to server"
         ansible.builtin.copy:
-            src: "/home/gnus/.ssh/id_rsa"
-            dest: "/home/slayed/.ssh/"
+            src: "{{ ssh_key_path }}/{{ item }}"
+            dest: "{{ ssh_key_dest }}"
             mode: '0600'
-            owner: "slayed"
-            group: "slayed"
-      - name: "Copy id_slayed to server"
+            owner: {{ ansible_user }}
+            group: {{ ansible_user }}
+        with_items:
+          - "{{ ssh_keys }}"
+      - name: "Copy public key to server"
         ansible.builtin.copy:
-            src: "/home/gnus/repositories/blade/.ssh/id_slayed"
-            dest: "/home/slayed/.ssh/"
-            mode: '0600'
-            owner: "slayed"
-            group: "slayed"
-      - name: "Copy id_slayed.pub to server"
-        ansible.builtin.copy:
-            src: "/home/gnus/repositories/blade/.ssh/id_slayed.pub"
-            dest: "/home/slayed/.ssh/"
+            src: "{{ ssh_key_path }}/{{ ssh_keys_pub }}"
+            dest: "{{ ssh_key_dest }}"
             mode: '0644'
-            owner: "slayed"
-            group: "slayed"
-      - name: "Copy id_rsa.pub to server"
-        ansible.builtin.copy:
-            src: "/home/gnus/.ssh/id_rsa.pub"
-            dest: "/home/slayed/.ssh/"
-            mode: '0644'
-            owner: "slayed"
-            group: "slayed"
+            owner: {{ ansible_user }}
+            group: {{ ansible_user }}
+        with_items:
+          - {{ ssh_keys_pub }}
       - name: "Update SSH keys"
         ansible.posix.authorized_key:
             user: "slayed"
-            key: "{{ item }}"
+            key: "{{ ssh_key_path }}/{{ item }}"
             state: present
         with_file:
-            - "/home/gnus/repositories/blade/.ssh/id_slayed.pub"
-            - "/home/gnus/.ssh/id_rsa.pub"
+          - {{ ssh_keys_pub }}
       - name: "Disable Password Authentication"
         ansible.builtin.lineinfile:
             dest: "/etc/ssh/sshd_config"
