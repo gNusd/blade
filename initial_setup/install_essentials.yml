@@ -18,12 +18,13 @@
           - htop
           - glances
           - cockpit
+          - neovim
     - name: "Enable adn start docker.service"
       ansible.builtin.systemd:
         name: docker.service
         state: reloaded
     - name: "Add slayed to docker group"
-      user:
+      ansible.builtin.user:
         name: "slayed"
         group: "docker"
         shell: /bin/bash
