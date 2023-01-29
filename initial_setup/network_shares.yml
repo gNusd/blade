@@ -1,0 +1,44 @@
+---
+- name: "Mount cifs shares in fstab"
+  hosts: all
+  become: true
+  remote_user: slayed
+  vars:
+    uri: "//192.168.1.155"
+    mountpoint: "/home/gnus/mnt"
+    nas:
+      - backups
+      - downloads
+      - gnus
+      - music
+      - video
+  tasks:
+    - name: "Utility present"
+      ansible.builtin.apt:
+        name: cifs-utils
+        state: present
+    - name: "Copy .smb to /home/gnus/"
+      ansible.builtin.copy:
+        src: "/home/gnus/repositories/blade/secrets/.smb"
+        dest: "/home/gnus/"
+        mode: '0600'
+        owner: "gnus"
+        group: "gnus"
+    - name: "Check mountpoint exist"
+      ansible.builtin.file:
+        path: "{{ mountpoint }}/{{ item }}"
+        state: directory
+        mode: '0755'
+        owner: gnus
+        group: gnus
+      with_items:
+        - "{{ nas }}"
+    - name: Mount network share
+      ansible.posix.mount:
+        src: "{{ uri }}/{{ item }}"
+        path: "{{ mountpoint }}/{{ item }}"
+        fstype: cifs
+        opts: 'credentials=/home/gnus/.smb'
+        state: mounted
+      with_items:
+        - "{{ nas }}"
