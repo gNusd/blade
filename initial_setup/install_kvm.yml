@@ -1,6 +1,6 @@
 ---
 - name: Install essential packages
-  hosts: srv3
+  hosts: srv4
   gather_facts: false
   remote_user: slayed
   become: true
