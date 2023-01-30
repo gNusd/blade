@@ -4,49 +4,7 @@
   gather_facts: false
   remote_user: slayed
   become: true
-  vars:
-    ssh_key_path: /home/gnus/repositories/blade/.ssh
-    ssh_key_dest: /home/slayed/.ssh
-    ssh_keys:
-      - id_rsa
-      - id_slayed
-    ssh_keys_pub:
-      - id_rsa.pub
-      - id_slayed.pub
-    user: slayed
   tasks:
-    - name: "Creates directory"
-      ansible.builtin.file:
-        path: "/home/slayed/.ssh"
-        state: "directory"
-        mode: '0700'
-        owner: "{{ user }}"
-        group: "{{ user }}"
-    - name: "Copy private key to server"
-      ansible.builtin.copy:
-        src: "{{ ssh_key_path }}/{{ item }}"
-        dest: "{{ ssh_key_dest }}"
-        mode: '0600'
-        owner: "{{ user }}"
-        group: "{{ user }}"
-      with_items:
-        - "{{ ssh_keys }}"
-    - name: "Copy public key to server"
-      ansible.builtin.copy:
-        src: "{{ ssh_key_path }}/{{ item }}"
-        dest: "{{ ssh_key_dest }}"
-        mode: '0644'
-        owner: "{{ user }}"
-        group: "{{ user }}"
-      with_items:
-        - "{{ ssh_keys_pub }}"
-    - name: "Update SSH keys"
-      ansible.posix.authorized_key:
-        user: "{{ user }}"
-        key: "{{ lookup('file',  '{{ ssh_key_path }}/{{ item }}') }}"
-        state: present
-      with_items:
-        - "{{ ssh_keys_pub }}"
     - name: "Disable Password Authentication"
       ansible.builtin.lineinfile:
         dest: "/etc/ssh/sshd_config"
