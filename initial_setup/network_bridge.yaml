@@ -4,7 +4,7 @@
   become: true
   remote_user: slayed
   vars:
-    NIC: enp1s0
+    nic_dev: enp1s0
   tasks:
   - name: "Move bridge config to /etc/netplan"
     ansible.builtin.copy:
@@ -16,14 +16,14 @@
   - name: "Change NIC in config"
     ansible.builtin.lineinfile:
         dest: "/etc/netplan/01-bridge_network.yaml"
-        regexp: "'^NIC'"
+        regexp: "'^nic_dev'"
         line: "{{ NIC }}"
         state: "present"
         backup: true
   - name: "Change NIC in config"
     ansible.builtin.lineinfile:
         dest: "/etc/netplan/01-bridge_network.yaml"
-        regexp: "'^ - NIC'"
+        regexp: "'^ - nic_dev'"
         line: " - {{ NIC }}"
         state: "present"
         backup: true
