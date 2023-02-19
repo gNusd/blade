@@ -1,0 +1,29 @@
+---
+- name: "Create bridged network with netplan"
+  hosts: all
+  become: true
+  remote_user: slayed
+  vars:
+    NIC: enp1s0
+  tasks:
+  - name: "Move bridge config to /etc/netplan"
+    ansible.builtin.copy:
+        path: "/home/gnus/repositories/blade/files/01-bridge_network.yaml"
+        dest: "/etc/netplan/"
+        mode: '644'
+        owner: "root"
+        group: "root"
+  - name: "Change NIC in config"
+    ansible.builtin.lineinfile:
+        dest: "/etc/netplan/01-bridge_network.yaml"
+        regexp: "'^NIC'"
+        line: "{{ NIC }}"
+        state: "present"
+        backup: true
+  - name: "Change NIC in config"
+    ansible.builtin.lineinfile:
+        dest: "/etc/netplan/01-bridge_network.yaml"
+        regexp: "'^ - NIC'"
+        line: " - {{ NIC }}"
+        state: "present"
+        backup: true

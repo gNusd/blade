@@ -2,54 +2,54 @@
 - name: Clone git directories
   hosts: all
   gather_facts: false
-  remote_user: slayed
+  remote_user: gnus
   become: false
   tasks:
     - name: "Creates repositories directory"
       ansible.builtin.file:
-        path: "/home/slayed/repositories"
+        path: "/home/gnus/repositories"
         state: "directory"
-        owner: "slayed"
+        owner: "gnus"
         mode: '0755'
     - name: "Creates dotfiles directory"
       ansible.builtin.file:
-        path: "/home/slayed/repositories/dotfiles"
+        path: "/home/gnus/repositories/dotfiles"
         state: "directory"
-        owner: "slayed"
+        owner: "gnus"
         mode: '0755'
     - name: "Creates scripts directory"
       ansible.builtin.file:
-        path: /home/slayed/repositories/scripts
+        path: /home/gnus/repositories/scripts
         state: "directory"
-        owner: "slayed"
+        owner: "gnus"
         mode: '0755'
     - name: "Clone dotfiles"
       ansible.builtin.git:
         repo: "https://github.com/gnusd/dotfiles.git"
-        dest: "/home/slayed/repositories/dotfiles/"
+        dest: "/home/gnus/repositories/dotfiles/"
         clone: true
         update: true
         version: "tyrellCorp"
     - name: "Clone scripts"
       ansible.builtin.git:
         repo: "https://github.com/gnusd/scripts.git"
-        dest: "/home/slayed/repositories/scripts/"
+        dest: "/home/gnus/repositories/scripts/"
         clone: true
         update: true
         version: "master"
     - name: "Clone local-bin"
       ansible.builtin.git:
         repo: "https://github.com/gnusd/local-bin.git"
-        dest: "/home/slayed/.local/bin/"
+        dest: "/home/gnus/.local/bin/"
         clone: true
         update: true
         version: "tyrellCorp"
     - name: "Remove file"
       ansible.builtin.file:
-        path: "/home/slayed/.bashrc"
+        path: "/home/gnus/.bashrc"
         state: absent
     - name: "Symbolic link of .bashrc in dotfiles"
       ansible.builtin.file:
-        src: "/home/slayed/repositories/dotfiles/.bashrc"
-        dest: "/home/slayed/.bashrc"
+        src: "/home/gnus/repositories/dotfiles/.bashrc"
+        dest: "/home/gnus/.bashrc"
         state: link

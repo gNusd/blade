@@ -18,10 +18,11 @@
           - tmux
           - docker-compose
           - htop
-          - glances
           - cockpit
+          - cockpit-machines
           - neovim
           - vifm
+          - network-manager
     - name: "Enable adn start docker.service"
       ansible.builtin.systemd:
         name: docker.service

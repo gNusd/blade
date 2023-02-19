@@ -1,6 +1,6 @@
 ---
 - name: Initial setup
-  hosts: srv4
+  hosts: all
   gather_facts: false
   remote_user: gnus
   become: true

@@ -1,6 +1,6 @@
 ---
 - name: Install essential packages
-  hosts: srv4
+  hosts: all
   gather_facts: false
   remote_user: slayed
   become: true
@@ -9,10 +9,10 @@
     new_groups:
       - "kvm"
       - "libvirt"
-    interface: "\t\t\tenp1s0:"
-    interface_name: "\t\t\tinterfaces: [enp1s0]"
-    ip_address: "\t\t\taddresses: [192.168.122.7/24]"
-    mac_address: "\t\t\tmacaddress: 52:54:00:ea:b8:c8"
+    interface: "\tenp1s0:"
+    interface_name: "\tinterfaces: [enp1s0]"
+    ip_address: "\taddresses: [192.168.122.7/24]"
+    mac_address: "\tmacaddress: 52:54:00:ea:b8:c8"
   tasks:
     - name: "Update apt-get repo and cache"
       ansible.builtin.apt:
@@ -40,21 +40,3 @@
         append: true
       with_items:
         - "{{ new_groups }}"
-    - name: "Copy public key to server"
-      ansible.builtin.copy:
-        src: "/home/gnus/repositories/blade/files/01-netcfg.yaml"
-        dest: "/etc/netplan/"
-        mode: '0644'
-        owner: "root"
-        group: "root"
-    - name: "Add details to 01-netcfg.yaml"
-      ansible.builtin.lineinfile:
-        dest: "/etc/netplan/01-netcfg.yaml"
-        regexp: "{{ item.From }}"
-        line: "{{ item.To }}"
-        state: "present"
-        backup: true
-      with_items:
-        - { From: '<<interface_name>>', To: '{{ interface_name }}' }
-        - { From: '<<ip_address>>', To: '{{ ip_address }}' }
-        - { From: '<<mac_address>>', To: '{{ mac_address }}' }

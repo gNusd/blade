@@ -4,7 +4,7 @@
   become: true
   remote_user: slayed
   vars:
-    uri: "//192.168.1.155"
+    uri: "//192.168.1.50"
     mountpoint: "/home/gnus/mnt"
     nas:
       - backups
