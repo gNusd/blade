@@ -1,4 +1,5 @@
 ---
+
 - name: Initial setup
   hosts: all
   gather_facts: false

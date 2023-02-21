@@ -1,0 +1,7 @@
+initial_setup/setup_ansible_user_upgrade_system.yml 
+initial_setup/ssh_key_to_gnus.yml
+initial_setup/ssh_hardning_keys.yml
+initial_setup/install_essentials.yml
+initial_setup/git_clone.yml
+initial_setup/install_kvm.yml
+initial_setup/network_bridge.yml

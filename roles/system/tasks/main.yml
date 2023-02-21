@@ -1,0 +1,11 @@
+---
+- name: "Running system setup"
+  hosts: all
+  tasks:
+    - import_tasks: setup_ansible_user_upgrade_system.yml
+    - import_tasks: ssh_key_to_gnus.yml
+    - import_tasks: ssh_hardning_keys.yml
+    - import_tasks: install_essentials.yml
+    - import_tasks: git_clone.yml
+    - import_tasks: install_kvm.yml
+    - import_tasks: network_bridge.yml

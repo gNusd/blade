@@ -1,11 +1,12 @@
 ---
+
 - name: Install essential packages
   hosts: all
   gather_facts: false
   remote_user: slayed
   become: true
   vars:
-    user: "slayed"
+    user: "gnus"
   tasks:
     - name: "Update apt-get repo and cache"
       ansible.builtin.apt:
@@ -30,6 +31,6 @@
     - name: "Add slayed to docker group"
       ansible.builtin.user:
         name: "{{ user }}"
-        group: "docker"
+        groups: "docker"
         append: true
         shell: /bin/bash
